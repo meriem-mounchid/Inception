@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+  mariadb:
+      build:
+        context: .
+        dockerfile: ./mariadb/Dockerfile
+      image: mariadb_test
+      volumes:
+        - mariadb_data:/var/lib/mysql
+      environment:
+        - MYSQL_ROOT_PASSWORD=misaki_root
+        - MYSQL_DATABASE=misaki_db
+        - MYSQL_USER=misaki_user
+        - MYSQL_PASSWORD=misaki_pass
+      ports:
+        - 3306:3306
+      restart: on-failure
+volumes:
+  mariadb_data:
