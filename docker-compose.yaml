@@ -2,19 +2,50 @@ version: '3'
 
 services:
   mariadb:
-      build:
-        context: .
-        dockerfile: ./mariadb/Dockerfile
-      image: mariadb_test
-      volumes:
-        - mariadb_data:/var/lib/mysql
-      environment:
-        - MYSQL_ROOT_PASSWORD=misaki_root
-        - MYSQL_DATABASE=misaki_db
-        - MYSQL_USER=misaki_user
-        - MYSQL_PASSWORD=misaki_pass
-      ports:
-        - 3306:3306
-      restart: on-failure
+    build:
+      context: .
+      dockerfile: ./mariadb/Dockerfile
+    image: mariadb_test
+    ports:
+      - 3306:3306
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Promisaki
+      - MYSQL_PASSWORD=misaki
+      - MYSQL_USER=misaki_user
+      - MYSQL_DATABASE=misaki_db
+    restart: on-failure
+  wordpress:
+    build:
+      context: .
+      dockerfile: ./wordpress/Dockerfile
+    image: wordpress_test
+    ports:
+      #- 9000:9000      
+      - 80:80
+    volumes:
+      -   wordpress_nginx:/var/www/html
+    depends_on:
+      - mariadb
+    environment:
+      - WORDPRESS_DB_HOST=mariadb
+      - WORDPRESS_DB_PASSWORD=misaki
+      - WORDPRESS_DB_NAME=misaki_db
+      - WORDPRESS_DB_USER=misaki_user
+    links:
+      - mariadb
+    restart: on-failure
+  # nginx:
+  #   image: nginx:alpine
+  #   #volumes:
+  #     # - nginx:/etc/nginx/conf.d
+  #     # -   wordpress_nginx:/var/www/html
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #   # links:
+  #   #   - wordpress
 volumes:
   mariadb_data:
+  wordpress_nginx:
