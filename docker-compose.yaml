@@ -2,12 +2,11 @@ version: '3'
 
 services:
   mariadb:
-    build:
-      context: .
-      dockerfile: ./mariadb/Dockerfile
-    image: mariadb_test
+    build: ./mariadb/
+    image: mariadb
     ports:
       - 3306:3306
+    container_name: mariadb
     volumes:
       - mariadb_data:/var/lib/mysql
     environment:
@@ -16,11 +15,12 @@ services:
       - MYSQL_USER=misaki_user
       - MYSQL_DATABASE=misaki_db
     restart: on-failure
+    networks:
+      - lognet
   wordpress:
-    build:
-      context: .
-      dockerfile: ./wordpress/Dockerfile
-    image: wordpress_test
+    build: ./wordpress/
+    image: wordpress
+    container_name: wordpress
     ports:
       #- 9000:9000      
       - 80:80
@@ -33,9 +33,18 @@ services:
       - WORDPRESS_DB_PASSWORD=misaki
       - WORDPRESS_DB_NAME=misaki_db
       - WORDPRESS_DB_USER=misaki_user
-    links:
-      - mariadb
+    networks:
+      - lognet
     restart: on-failure
+  adminer:
+    build: ./bonus/
+    image: adminer
+    container_name: adminer
+    restart: on-failure
+    ports:
+      - 8080:8080
+    networks:
+      - lognet
   # nginx:
   #   image: nginx:alpine
   #   #volumes:
@@ -49,3 +58,8 @@ services:
 volumes:
   mariadb_data:
   wordpress_nginx:
+
+networks:
+  lognet:
+    name: mynetwork
+    driver: bridge
