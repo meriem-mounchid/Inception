@@ -3,21 +3,24 @@ version: '3'
 services:
   mariadb:
     build: ./mariadb/
+    # image: mariadb:10.8.2
     image: mariadb
     ports:
       - 3306:3306
     container_name: mariadb
     volumes:
       - mariadb_data:/var/lib/mysql
+    # env_file: .env
     environment:
-      - MYSQL_ROOT_PASSWORD=Promisaki
-      - MYSQL_PASSWORD=misaki
-      - MYSQL_USER=misaki_user
-      - MYSQL_DATABASE=misaki_db
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
     restart: on-failure
     networks:
       - lognet
-  wordpress:
+
+  wordpress:                         
     build: ./wordpress/
     image: wordpress
     container_name: wordpress
@@ -28,11 +31,12 @@ services:
       -   wordpress_nginx:/var/www/html
     depends_on:
       - mariadb
-    environment:
-      - WORDPRESS_DB_HOST=mariadb
-      - WORDPRESS_DB_PASSWORD=misaki
-      - WORDPRESS_DB_NAME=misaki_db
-      - WORDPRESS_DB_USER=misaki_user
+    env_file: .env
+    # environment:
+    #   - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
+    #   - WORDPRESS_DB_USER=${MYSQL_USER}
+    #   - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
+    #   - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
     networks:
       - lognet
     restart: on-failure
@@ -61,5 +65,5 @@ volumes:
 
 networks:
   lognet:
-    name: mynetwork
+    # name: mynetwork
     driver: bridge
