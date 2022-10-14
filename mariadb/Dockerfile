@@ -1,27 +1,31 @@
-FROM mariadb:10.8.2
-# FROM debian:buster
+# FROM mariadb:10.8.2
 
-# RUN apt-get update
-# RUN apt-get install -y mariadb-server vim 
+FROM debian:buster
 
-# COPY mariadb.sql mariadb.sql
-# # COPY import-data.sh import-data.sh
-# # COPY entrypoint.sh entrypoint.sh
+RUN apt-get update
+RUN apt-get upgrade -y
+RUN apt-get install -y vim mariadb-server
 
-# ENV MYSQL_ROOT_PASSWORD=root_misaki
-# ENV MYSQL_PASSWORD=misaki
-# ENV MYSQL_USER=misaki_user
-# ENV MYSQL_DATABASE=misaki_db
+COPY ./test.sql /
+COPY ./test.sh /
 
+RUN sed -i 's/bind-address            = 127.0.0.1/bind-address            = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
+RUN sed -i 's/#port                   = 3306/port                    = 3306/' /etc/mysql/mariadb.conf.d/50-server.cnf
+RUN chmod +x /test.sh
+RUN sh test.sh
 
-# RUN /etc/init.d/mariadb start
-# RUN mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE ${MYSQL_DATABASE}"
-# RUN mysql -u root -p${MYSQL_ROOT_PASSWORD} -D ${MYSQL_DATABASE} < mysql.sql
+#CMD ["mysqld_safe"]
+# docker run -it --entrypoint /bin/bash maria -s
 
-# # VOLUME /Users/mmounchi/data/
-# # mysql -uroot < data.sql
-# EXPOSE 3306
-# # mysql -uroot 'create database $'
-# # CMD ["mysqld_safe"]
-# CMD [“mysqld”]
+EXPOSE 3306
+CMD exec mysqld
 
+# To Build: docker build -t maria .
+# To Run: docker run -it -p 3306:3306 --name myhubby maria
+# vim /etc/mysql/mariadb.conf.d/50-server.cnf
+
+# Install ps & MariaDB server is running
+# apt-get update && apt-get install -y procps
+# ps -ef | grep -i mysql
+# apt-get install net-tools
+# netstat -ant | grep 3306

@@ -3,67 +3,74 @@ version: '3'
 services:
   mariadb:
     build: ./mariadb/
-    # image: mariadb:10.8.2
-    image: mariadb
     ports:
       - 3306:3306
     container_name: mariadb
     volumes:
       - mariadb_data:/var/lib/mysql
-    # env_file: .env
-    environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DATABASE=${MYSQL_DATABASE}
+    env_file: .env
+    # environment:
+    #   - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    #   - MYSQL_USER=${MYSQL_USER}
+    #   - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    #   - MYSQL_DATABASE=${MYSQL_DATABASE}
     restart: on-failure
     networks:
-      - lognet
+      - mynetwork
 
   wordpress:                         
     build: ./wordpress/
     image: wordpress
     container_name: wordpress
     ports:
-      #- 9000:9000      
-      - 80:80
+      - 9000:9000
+      # - 80:80
     volumes:
       -   wordpress_nginx:/var/www/html
     depends_on:
       - mariadb
     env_file: .env
-    # environment:
-    #   - WORDPRESS_DB_HOST=${WORDPRESS_DB_HOST}
-    #   - WORDPRESS_DB_USER=${MYSQL_USER}
-    #   - WORDPRESS_DB_PASSWORD=${MYSQL_PASSWORD}
-    #   - WORDPRESS_DB_NAME=${MYSQL_DATABASE}
     networks:
-      - lognet
+      - mynetwork
     restart: on-failure
-  adminer:
-    build: ./bonus/
-    image: adminer
-    container_name: adminer
-    restart: on-failure
-    ports:
-      - 8080:8080
-    networks:
-      - lognet
-  # nginx:
-  #   image: nginx:alpine
-  #   #volumes:
-  #     # - nginx:/etc/nginx/conf.d
-  #     # -   wordpress_nginx:/var/www/html
+    tty: true
+
+  # adminer:
+  #   build: ./bonus/adminer/
+  #   image: adminer
+  #   container_name: adminer
+  #   env_file: .env
+  #   # environment:
+  #   #   ADMINER_DEFAULT_SERVER: mariadb
+  #   restart: on-failure
+  #   depends_on:
+  #     - mariadb
   #   ports:
-  #     - 80:80
-  #     - 443:443
-  #   # links:
-  #   #   - wordpress
+  #     - 8080:8080
+  #   networks:
+  #     - mynetwork
+      
+  nginx:
+    build: ./nginx/
+    image: nginx
+    container_name: nginx
+    volumes:
+      - wordpress_nginx:/var/www/html
+    ports:
+      - 443:443
+      # - 80:80
+    depends_on:
+      - wordpress
+    networks:
+      - mynetwork
+
 volumes:
   mariadb_data:
   wordpress_nginx:
+      # device: /Users/mmounchi/Desktop/Data
+      # name: wordpress_nginx
 
 networks:
-  lognet:
-    # name: mynetwork
-    driver: bridge
+  mynetwork:
+      # name: mynetwork
+      driver: bridge

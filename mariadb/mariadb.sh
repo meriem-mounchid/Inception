@@ -19,9 +19,6 @@ service mariadb start
 # RUN /etc/init.d/mariadb start
 mariadb
 CREATE DATABASE misaki_db;
-# RUN mysql -u root -p${MYSQL_ROOT_PASSWORD} -e "CREATE DATABASE misaki_db"
-# RUN mysql -u root -p${MYSQL_ROOT_PASSWORD} -D lba < /usr/sql/sources.sql
-
 
 # show databases;
 ALTER USER 'root'@'localhost' IDENTIFIED BY '';
