@@ -1,0 +1,9 @@
+.env
+.git
+# docker-compose.yml
+.dockerignore
+Vagrantfile
+ToDo
+test.sh
+script.sh
+Note
