@@ -5,7 +5,7 @@ FROM debian:buster
 RUN apt-get update -y
 RUN apt-get upgrade -y
 RUN apt-get install wget vim apache2 php libapache2-mod-php php-curl php-cli php-mysql php-gd -y
-# RUN service apache2 start
+# RUN service apache2 startz
 # RUN service mariadb start
 COPY ./script.sh /
 

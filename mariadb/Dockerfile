@@ -6,19 +6,19 @@ RUN apt-get update
 RUN apt-get upgrade -y
 RUN apt-get install -y vim mariadb-server
 
-COPY ./test.sql /
-COPY ./test.sh /
+# COPY ./mariadb.sql /
+COPY ./mariadb.sh /
 
 RUN sed -i 's/bind-address            = 127.0.0.1/bind-address            = 0.0.0.0/' /etc/mysql/mariadb.conf.d/50-server.cnf
 RUN sed -i 's/#port                   = 3306/port                    = 3306/' /etc/mysql/mariadb.conf.d/50-server.cnf
-RUN chmod +x /test.sh
-RUN sh test.sh
+RUN chmod +x /mariadb.sh
 
-#CMD ["mysqld_safe"]
-# docker run -it --entrypoint /bin/bash maria -s
+# RUN ./mariadb.sh
 
 EXPOSE 3306
-CMD exec mysqld
+
+CMD ["./mariadb.sh"]
+# CMD ["mysqld_safe"]
 
 # To Build: docker build -t maria .
 # To Run: docker run -it -p 3306:3306 --name myhubby maria

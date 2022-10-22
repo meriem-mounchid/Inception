@@ -29,7 +29,7 @@ define( 'DB_USER', 'misaki_user' );
 define( 'DB_PASSWORD', 'misaki' );
 
 /** Database hostname */
-define( 'DB_HOST', 'localhost' );
+define( 'DB_HOST', 'mariadb' );
 
 /** Database charset to use in creating database tables. */
 define( 'DB_CHARSET', 'utf8' );
