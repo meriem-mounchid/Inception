@@ -25,21 +25,6 @@ services:
       - mynetwork
     restart: always
     # tty: true
-
-  adminer:
-    build: ./bonus/adminer/
-    image: adminer
-    container_name: adminer
-    env_file: .env
-    # environment:
-    #   ADMINER_DEFAULT_SERVER: mariadb
-    restart: always
-    depends_on:
-      - mariadb
-    ports:
-      - 8080:8080
-    networks:
-      - mynetwork
       
   nginx:
     build: ./nginx/
@@ -49,16 +34,47 @@ services:
       - wordpress_nginx:/var/www/html
     ports:
       - 443:443
+      - 0021:0021
     depends_on:
       - wordpress
     restart: always
     networks:
       - mynetwork
+    
+  # adminer:
+  #   build: ./bonus/adminer/
+  #   image: adminer
+  #   container_name: adminer
+  #   env_file: .env
+  #   restart: always
+  #   depends_on:
+  #     - mariadb
+  #   ports:
+  #     - 8080:8080
+  #   networks:
+  #     - mynetwork
+
+  # ftp:
+  #   build: ./bonus/ftp/
+  #   image: ftp
+  #   container_name: ftp
+  #   env_file: .env
+  #   restart: always
+  #   # depends_on:
+  #   #   - mariadb
+  #   ports:
+  #     - "21:21"
+  #     - "47400-47470:47400-47470"
+  #   volume:
+  #     - ftp_data:
+  #     - 
+  #   networks:
+  #     - mynetwork
 
 volumes:
   mariadb_data:
-  # nginx:
   wordpress_nginx:
+  # ftp_data:
       # device: /Users/mmounchi/Desktop/Data
       # name: wordpress_nginx
 

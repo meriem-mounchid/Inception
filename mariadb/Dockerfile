@@ -1,5 +1,3 @@
-# FROM mariadb:10.8.2
-
 FROM debian:buster
 
 RUN apt-get update
