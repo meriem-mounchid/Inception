@@ -6,7 +6,7 @@ docker rm $(docker ps -a -q)
 docker rmi -f $(docker images -q)
 
 ### Delete Volumes ###
-docker volume prune
+docker volume rm $(docker volume ls -q)
 
 ### Delete Network ###
 docker network prune

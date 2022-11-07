@@ -1,41 +1,33 @@
-FROM ftp
+FROM debian:buster
 
-# RUN apt update
-# RUN apt install vsftpd -y
-# service vsftpd stop
+ARG FTP_USER_NAME=$FTP_USER_NAME
+ARG FTP_USER_PASS=$FTP_USER_PASS
+ARG FTP_USER_HOME=$FTP_USER_HOME
 
-# mkdir -p /etc/vsftpd
-# mv /etc/vsftpd.conf /etc/vsftpd/
-# vim /etc/vsftpd/vsftpd.conf
-# vim /etc/vsftpd.conf
-# service vsftpd restart
-# adduser misaki
-# passwd misaki
-# echo "misaki" | tee -a  /etc/vsftpd.chroot_list
-# service vsftpd restart
+COPY ./script.sh /
+RUN chmod +x script.sh
 
+RUN apt-get update
+RUN apt-get install vsftpd vim -y
 
-# docker run -it -v /Users/mmounchi/Desktop/Docker:/home/vsftpd -p 20:20 -p 21:21 -p 47400-47470:47400-47470 -e FTP_USER=yourName -e FTP_PASS=yourPass -e PASV_ADDRESS=127.0.0.1 --name ftp --restart=always bogem/ftp
-# docker run -it -p 20:20 -p 21:21 -p 40000-40009:40000-40009 -e FTP_USER=misaki -e FTP_PASS=misaki -e PASV_ADDRESS=127.0.0.1 --name ftp debian
+RUN useradd -ms /bin/bash ${FTP_USER_NAME}
+RUN echo ${FTP_USER_NAME}:${FTP_USER_PASS} | chpasswd 
+RUN echo ${FTP_USER_NAME} | tee -a  /etc/vsftpd.userlist
 
+RUN echo "write_enable=YES" >> /etc/vsftpd.conf
+RUN echo "chroot_local_user=YES" >> /etc/vsftpd.conf
+RUN echo "allow_writeable_chroot=YES" >> /etc/vsftpd.conf
+RUN sed -i 's/secure_chroot_dir=\/var\/run\/vsftpd\/empty/secure_chroot_dir=\/home\/misaki/' /etc/vsftpd.conf
+RUN echo "pasv_enable=YES" >> /etc/vsftpd.conf
+RUN echo "pasv_min_port=40000" >> /etc/vsftpd.conf
+RUN echo "pasv_max_port=40009" >> /etc/vsftpd.conf
+RUN echo "userlist_enable=YES" >> /etc/vsftpd.conf
+RUN echo "userlist_file=/etc/vsftpd.userlist" >> /etc/vsftpd.conf
+RUN echo "userlist_deny=NO" >> /etc/vsftpd.conf
 
+RUN mkdir -p ${FTP_USER_HOME}/ftp
+RUN chown -R ${FTP_USER_NAME}:${FTP_USER_PASS} ${FTP_USER_HOME}
 
-# apt-get install -y procps net-tools vim
-# netstat -npl
-# CMD ["/usr/sbin/vsftpd","-obackground=NO"]
+EXPOSE 21 40000-40009
 
-# user_local_user=NO
-# userlist_enable=YES
-# userlist_file=/etc/vsftpd.userlist 
-
-# ----- TEST -----
-# mkdir /home/misaki/ftp
-# chown root:root /home/misaki/ftp
-# chmod a-w /home/misaki/ftp
-
-# mkdir /home/misaki/ftp/files
-# chown misaki:misaki /home/misaki/ftp/files
-# chmod 0700 /home/misaki/ftp/files
-
-
-
+CMD ["./script.sh"]
