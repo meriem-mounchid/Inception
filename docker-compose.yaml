@@ -39,59 +39,53 @@ services:
     networks:
       - mynetwork
     
-  adminer:
-    build: ./bonus/adminer/
-    image: adminer
-    container_name: adminer
-    env_file: .env
-    restart: always
-    depends_on:
-      - mariadb
-    ports:
-      - 8080:8080
-    networks:
-      - mynetwork
-
-  ftp:
-    build:
-      context: ./bonus/ftp/
-      args: 
-        - FTP_USER_NAME=$FTP_USER_NAME
-        - FTP_USER_PASS=$FTP_USER_PASS
-        - FTP_USER_HOME=$FTP_USER_HOME
-    image: ftp
-    container_name: ftp
-    env_file: .env
-    restart: always
-    depends_on:
-      - wordpress
-    ports:
-      - "21:21"
-      - "40000-40009:40000-40009"
-    volumes:
-      - wordpress_nginx:/home/misaki/ftp
-    networks:
-      - mynetwork 
-
-  # redis:
+  # adminer:
   #   build: ./bonus/adminer/
-  #   image: redis
-  #   container_name: redis
+  #   image: adminer
+  #   container_name: adminer
   #   env_file: .env
   #   restart: always
-  #   # depends_on:
-  #   #   - wordpress
+  #   depends_on:
+  #     - mariadb
   #   ports:
-  #     -
-  #   # volumes:
-  #   #   - wordpress_nginx:/home/misaki/ftp
+  #     - 8080:8080
+  #   networks:
+  #     - mynetwork
+
+  # ftp:
+  #   build:
+  #     context: ./bonus/ftp/
+  #     args: 
+  #       - FTP_USER_NAME=$FTP_USER_NAME
+  #       - FTP_USER_PASS=$FTP_USER_PASS
+  #       - FTP_USER_HOME=$FTP_USER_HOME
+  #   image: ftp
+  #   container_name: ftp
+  #   env_file: .env
+  #   restart: always
+  #   depends_on:
+  #     - wordpress
+  #   ports:
+  #     - "21:21"
+  #     - "40000-40009:40000-40009"
+  #   volumes:
+  #     - wordpress_nginx:/home/misaki/ftp
   #   networks:
   #     - mynetwork 
-  #   # tty: true
 
-# volumes:
-#   mariadb_data:
-#   wordpress_nginx:
+  redis:
+    build: ./bonus/redis/
+    image: redis
+    container_name: redis
+    env_file: .env
+    restart: always
+    # depends_on:
+    #   - wordpress
+    ports:
+      - 6379:6379
+    networks:
+      - mynetwork 
+    # tty: true
 
 volumes:
   wordpress_nginx:
@@ -106,6 +100,18 @@ volumes:
       type: none
       o: bind
       device: /Users/mmounchi/Desktop/Docker/data/mariadb_data
+
+# volumes:
+#   mariadb_data:
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /home/misaki/Desktop/Docker/data/mariadb_data
+#   wordpress_nginx:
+#     driver_opts:
+#       type: none
+#       o: bind
+#       device: /home/misaki/Desktop/Docker/data/wordpress_nginx
 
 networks:
   mynetwork:
