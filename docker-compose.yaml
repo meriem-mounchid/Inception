@@ -79,8 +79,8 @@ services:
     container_name: redis
     env_file: .env
     restart: always
-    # depends_on:
-    #   - wordpress
+    depends_on:
+      - wordpress
     ports:
       - 6379:6379
     networks:
