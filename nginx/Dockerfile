@@ -1,4 +1,3 @@
-# FROM nginx
 FROM debian:buster
 
 RUN apt-get update
@@ -9,7 +8,6 @@ RUN rm -f /etc/nginx/sites-available/default
 RUN rm -f /etc/nginx/sites-enabled/default
 COPY ./nginx.conf /etc/nginx/sites-enabled/nginx.conf
 RUN ln -s /etc/nginx/sites-enabled/nginx.conf /etc/nginx/sites-available/nginx.conf
-# RUN nginx -t
 
 COPY ./script.sh /
 RUN chmod 777 script.sh
@@ -17,9 +15,3 @@ RUN chmod 777 script.sh
 EXPOSE 443
 
 CMD ["./script.sh"]
-
-# apt-get install -y procps net-tools
-# ps aux | grep nginx
-# apt-get install net-tools
-# netstat -tulpn | grep :80
-# service --status-all
